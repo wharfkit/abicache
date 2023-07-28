@@ -3,7 +3,7 @@ import {AbiProvider} from 'eosio-signing-request'
 
 export interface ABICacheInterface extends AbiProvider {
     readonly cache: Map<string, ABI>
-    readonly pending: Map<string, Promise<API.v1.GetAbiResponse>>
+    readonly pending: Map<string, Promise<API.v1.GetRawAbiResponse>>
     getAbi(account: NameType): Promise<ABI>
     setAbi(account: NameType, abi: ABIDef): void
 }
@@ -13,7 +13,7 @@ export interface ABICacheInterface extends AbiProvider {
  */
 export class ABICache implements ABICacheInterface {
     readonly cache: Map<string, ABI> = new Map()
-    readonly pending: Map<string, Promise<API.v1.GetAbiResponse>> = new Map()
+    readonly pending: Map<string, Promise<API.v1.GetRawAbiResponse>> = new Map()
 
     constructor(readonly client: APIClient) {}
 
@@ -23,7 +23,7 @@ export class ABICache implements ABICacheInterface {
         if (!record) {
             let getAbi = this.pending.get(key)
             if (!getAbi) {
-                getAbi = this.client.v1.chain.get_abi(account)
+                getAbi = this.client.v1.chain.get_raw_abi(account)
                 this.pending.set(key, getAbi)
             }
             const response = await getAbi
