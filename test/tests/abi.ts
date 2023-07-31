@@ -1,5 +1,5 @@
 import {makeClient} from '@wharfkit/mock-data'
-import {ABI, Name} from '@greymass/eosio'
+import {ABI, Name} from '@wharfkit/antelope'
 import {assert} from 'chai'
 import {ABICache} from '$lib'
 
