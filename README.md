@@ -27,7 +27,7 @@ Before submitting a pull request make sure to run `make check` and `make format`
 ## Dependencies
 
 -   [@wharfkit/antelope](https://github.com/wharfkit/antelope): Core library to provide Antelope data types.
--   [eosio-signing-request](https://github.com/greymass/eosio-signing-request): Antelope Signing Request Protocol.
+-   [@wharfkit/signing-request](https://github.com/@wharfkit/signing-request): Antelope Signing Request Protocol.
 
 ---
 

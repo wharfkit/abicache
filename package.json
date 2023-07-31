@@ -18,7 +18,7 @@
     },
     "dependencies": {
         "@wharfkit/antelope": "^0.7.3",
-        "eosio-signing-request": "^3.0.0-beta1",
+        "@wharfkit/signing-request": "^3.0.0",
         "pako": "^2.0.4",
         "tslib": "^2.1.0"
     },

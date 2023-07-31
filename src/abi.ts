@@ -1,5 +1,5 @@
 import {ABI, ABIDef, API, APIClient, NameType} from '@wharfkit/antelope'
-import {AbiProvider} from 'eosio-signing-request'
+import {AbiProvider} from '@wharfkit/signing-request'
 
 export interface ABICacheInterface extends AbiProvider {
     readonly cache: Map<string, ABI>
