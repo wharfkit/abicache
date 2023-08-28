@@ -1,7 +1,7 @@
 {
     "name": "@wharfkit/abicache",
     "description": "ABI Caching Mechanism for use in Session and Contract Kits",
-    "version": "1.1.1",
+    "version": "1.2.0-rc1",
     "homepage": "https://github.com/wharfkit/abicache",
     "license": "BSD-3-Clause",
     "main": "lib/abicache.js",
@@ -17,8 +17,9 @@
         "prepare": "make"
     },
     "dependencies": {
-        "@wharfkit/antelope": "^0.7.3",
-        "@wharfkit/signing-request": "^3.0.0",
+        "@wharfkit/antelope": "^0.9.0-rc2",
+        "@wharfkit/apiclient-leap": "^4.0.4",
+        "@wharfkit/signing-request": "^3.1.0-rc1",
         "pako": "^2.0.4",
         "tslib": "^2.1.0"
     },
