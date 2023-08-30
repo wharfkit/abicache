@@ -5,7 +5,7 @@ export interface ABICacheInterface extends AbiProvider {
     readonly cache: Map<string, ABI>
     readonly pending: Map<string, Promise<API.v1.GetRawAbiResponse>>
     getAbi(account: NameType): Promise<ABI>
-    setAbi(account: NameType, abi: ABIDef): void
+    setAbi(account: NameType, abi: ABIDef, merge?: boolean): void
 }
 
 /**
@@ -38,8 +38,24 @@ export class ABICache implements ABICacheInterface {
         return record
     }
 
-    setAbi(account: NameType, abi: ABIDef) {
+    setAbi(account: NameType, abiDef: ABIDef, merge = false) {
         const key = String(account)
-        this.cache.set(key, ABI.from(abi))
+        const abi = ABI.from(abiDef)
+        const existing = this.cache.get(key)
+        if (merge && existing) {
+            this.cache.set(
+                key,
+                ABI.from({
+                    types: [...existing.types, ...abi.types],
+                    structs: [...existing.structs, ...abi.structs],
+                    actions: [...existing.actions, ...abi.actions],
+                    tables: [...existing.tables, ...abi.tables],
+                    ricardian_clauses: [...existing.ricardian_clauses, ...abi.ricardian_clauses],
+                    variants: [...existing.variants, ...abi.variants],
+                })
+            )
+        } else {
+            this.cache.set(key, abi)
+        }
     }
 }
