@@ -1261,10 +1261,20 @@
     "@typescript-eslint/types" "5.45.0"
     eslint-visitor-keys "^3.3.0"
 
-"@wharfkit/antelope@^0.7.3", "@wharfkit/antelope@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@wharfkit/antelope/-/antelope-1.0.0.tgz#c3057b70575991be5de3aea19e0c474614783c80"
-  integrity sha512-gwc6L3AzceN/menx9HCV22Ekd3it1wRruY6dIkyfCaV2UBGmfvIVJ3wPaDi4Ppj2k50b86ShSSHdd52jOFd+dg==
+"@wharfkit/abicache@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@wharfkit/abicache/-/abicache-1.2.0.tgz#f67f7bbd854adc443c3e363d5fbe3d27ac4f8383"
+  integrity sha512-1+564ODM1KhUs7chE8KpYhnxShuPLC1MvqYcXVuLosxXXwcYC4IiJ1V3VuikLG+xfBDp1GZivGjHQwv1awE2Zw==
+  dependencies:
+    "@wharfkit/antelope" "^1.0.0"
+    "@wharfkit/signing-request" "^3.1.0"
+    pako "^2.0.4"
+    tslib "^2.1.0"
+
+"@wharfkit/antelope@^1.0.0", "@wharfkit/antelope@^1.0.1", "@wharfkit/antelope@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@wharfkit/antelope/-/antelope-1.0.2.tgz#99947c03bd709af712a2fab0a4d8237d81b52f9e"
+  integrity sha512-Oad6w0xg+3DyKqOhXcpEiyhZXizcoqdKX0UO6+YsjMZ4+qs16++Uq2YcxUeOHTpSeh2RM4EtX8qijyF5JzUg4w==
   dependencies:
     bn.js "^4.11.9"
     brorand "^1.1.0"
@@ -1273,24 +1283,33 @@
     pako "^2.1.0"
     tslib "^2.0.3"
 
-"@wharfkit/mock-data@^1.0.0-beta13":
-  version "1.0.0-beta13"
-  resolved "https://registry.yarnpkg.com/@wharfkit/mock-data/-/mock-data-1.0.0-beta13.tgz#ea603d54ad991aff770201a19f6904d5990061c6"
-  integrity sha512-pPUsQUEZCu6h54ez9XiSWm7KpdZFry31rdvZpLZiK0es++dOFEJOs7Y9IPpkcxhtCLQ6jGeDvLwExB4Pt2o9Lg==
+"@wharfkit/common@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@wharfkit/common/-/common-1.2.0.tgz#147f783f2ba5cc6fa7dd75863ba98dd05880a9aa"
+  integrity sha512-me/BN8D/4UPkY7yt+4v+E/z62PVj4VKY5+iRb7zoWv0epbW4o4nC6Oer8kBVL7xWC6Guucaol3hkxkTMgrnwlQ==
   dependencies:
-    "@wharfkit/antelope" "^0.7.3"
-    "@wharfkit/session" "^1.0.0-beta6"
-    "@wharfkit/wallet-plugin-privatekey" "^0.5.0"
+    tslib "^2.1.0"
+
+"@wharfkit/mock-data@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@wharfkit/mock-data/-/mock-data-1.2.1.tgz#f9e74887edf0927d1580589fc64310e398fccf42"
+  integrity sha512-foQDXyzK80woORqmV2OUBqy9Yy2trkyPmdURRaix2X3Hr9H9cEQBet63ipkTaEIUdeR+uPyx0kaoy0dlFECTqw==
+  dependencies:
+    "@wharfkit/antelope" "^1.0.0"
+    "@wharfkit/session" "^1.1.0-rcfinal"
+    "@wharfkit/wallet-plugin-privatekey" "^1.1.0"
     node-fetch "^2.6.1"
     tslib "^2.1.0"
 
-"@wharfkit/session@^1.0.0-beta6":
-  version "1.0.0-beta6"
-  resolved "https://registry.yarnpkg.com/@wharfkit/session/-/session-1.0.0-beta6.tgz#802f7d275ff877b87666a42e544cdfbdcc961971"
-  integrity sha512-XeLN9kwBwNY8IrqWKx1losUjN3x34ICzcK4bIbjEiSR0mvLXj05WFRjMMYQrip1S9UYwmFAVRJUvFS1KQedwgA==
+"@wharfkit/session@^1.1.0-rcfinal":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@wharfkit/session/-/session-1.1.1.tgz#91876b15fd86feb33ebcbf231d3cdabecef93d5b"
+  integrity sha512-AfRTJa/KJ1Ix7GaHTW/LJynxHUSNppJtAGA8jZYAETu8fol7/7qizN54EtlwOj6jmpMXsYkZ3UPvfXP8eIP+OA==
   dependencies:
-    "@wharfkit/antelope" "^0.7.3"
-    eosio-signing-request "^3.0.0-beta1"
+    "@wharfkit/abicache" "^1.2.0"
+    "@wharfkit/antelope" "^1.0.1"
+    "@wharfkit/common" "^1.2.0"
+    "@wharfkit/signing-request" "^3.1.0"
     pako "^2.0.4"
     tslib "^2.1.0"
 
@@ -1302,10 +1321,10 @@
     "@wharfkit/antelope" "^1.0.0"
     tslib "^2.0.3"
 
-"@wharfkit/wallet-plugin-privatekey@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@wharfkit/wallet-plugin-privatekey/-/wallet-plugin-privatekey-0.5.0.tgz#e6a954e08bf80777c4cb12c7ce69c1d9f5e62da2"
-  integrity sha512-dBpCLWnGfx2kUQUb3OKsKsTxbiFZvBkbh3v8LbnNHd4o/KyOCVbTwFQt6Jl+9QdlNzY2lESe+Ni/HDmfOHKVgg==
+"@wharfkit/wallet-plugin-privatekey@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@wharfkit/wallet-plugin-privatekey/-/wallet-plugin-privatekey-1.1.0.tgz#5985bff61895c54d2afbef359cd42da4f3871c7d"
+  integrity sha512-45LPj7AOVDm4RugDEhy0fnQX/BcMffeJPjGUCUrLazJ2S0Sti8nNk4nqiJqyme84c/0gq7d65vvwlmVfGtPVEg==
   dependencies:
     tslib "^2.1.0"
 
@@ -1795,14 +1814,6 @@ emoji-regex@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-8.0.0.tgz#e818fd69ce5ccfcb404594f842963bf53164cc37"
   integrity sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==
-
-eosio-signing-request@^3.0.0-beta1:
-  version "3.0.0-beta1"
-  resolved "https://registry.yarnpkg.com/eosio-signing-request/-/eosio-signing-request-3.0.0-beta1.tgz#96d29d11f802232a771a275cb255076b5117765c"
-  integrity sha512-fDtb1R9NHIUAkNEvny4x4L8oyfzsX13KKGb3/muk0PIvlGflFuIC+ATKl1e3x+b4dsYR4MFoylmMtJXdbb3Vsg==
-  dependencies:
-    "@wharfkit/antelope" "^0.7.3"
-    tslib "^2.0.3"
 
 es6-error@^4.0.1:
   version "4.1.1"
