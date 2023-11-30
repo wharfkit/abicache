@@ -46,16 +46,33 @@ export class ABICache implements ABICacheInterface {
             this.cache.set(
                 key,
                 ABI.from({
-                    types: [...existing.types, ...abi.types],
-                    structs: [...existing.structs, ...abi.structs],
-                    actions: [...existing.actions, ...abi.actions],
-                    tables: [...existing.tables, ...abi.tables],
-                    ricardian_clauses: [...existing.ricardian_clauses, ...abi.ricardian_clauses],
-                    variants: [...existing.variants, ...abi.variants],
+                    action_results: mergeAndDeduplicate(
+                        existing.action_results,
+                        abi.action_results
+                    ),
+                    types: mergeAndDeduplicate(existing.types, abi.types),
+                    structs: mergeAndDeduplicate(existing.structs, abi.structs),
+                    actions: mergeAndDeduplicate(existing.actions, abi.actions),
+                    tables: mergeAndDeduplicate(existing.tables, abi.tables),
+                    ricardian_clauses: mergeAndDeduplicate(
+                        existing.ricardian_clauses,
+                        abi.ricardian_clauses
+                    ),
+                    variants: mergeAndDeduplicate(existing.variants, abi.variants),
+                    version: abi.version,
                 })
             )
         } else {
             this.cache.set(key, abi)
         }
     }
+}
+
+function mergeAndDeduplicate(array1, array2) {
+    return [...array1, ...array2].reduce((acc, current) => {
+        if (!acc.some((obj) => String(obj.name) === String(current.name))) {
+            acc.push(current)
+        }
+        return acc
+    }, [])
 }

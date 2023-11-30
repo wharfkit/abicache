@@ -40,14 +40,20 @@ suite('ABICache', function () {
         assert.instanceOf(result, ABI)
         assert.equal(result.version, 'eosio::abi/1.2')
     })
-    test('manually add struct', async function () {
-        // @Struct.type('transfer')
-        // class Transfer extends Struct {
-        //     @Struct.field(Name) from!: Name
-        //     @Struct.field(Name) to!: Name
-        //     @Struct.field(Asset) quantity!: Asset
-        //     @Struct.field('string') memo!: string
-        // }
-        // abiCache.addStruct(Transfer)
+    test('merge abis', async function () {
+        const abi = await abiCache.getAbi(Name.from('eosio.token'))
+        abiCache.setAbi('eosio.token', abi, true)
+        abiCache.setAbi('eosio.token', abi, true)
+        abiCache.setAbi('eosio.token', abi, true)
+        const test = await abiCache.getAbi('eosio.token')
+        assert.equal(test.action_results.length, abi.action_results.length)
+        assert.equal(test.actions.length, abi.actions.length)
+        assert.equal(test.ricardian_clauses.length, abi.ricardian_clauses.length)
+        assert.equal(test.structs.length, abi.structs.length)
+        assert.equal(test.tables.length, abi.tables.length)
+        assert.equal(test.types.length, abi.types.length)
+        assert.equal(test.variants.length, abi.variants.length)
+        assert.equal(test.version, abi.version)
+        assert.equal(JSON.stringify(test), JSON.stringify(abi))
     })
 })
