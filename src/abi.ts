@@ -50,13 +50,14 @@ export class ABICache implements ABICacheInterface {
                         existing.action_results,
                         abi.action_results
                     ),
-                    types: mergeAndDeduplicate(existing.types, abi.types),
+                    types: mergeAndDeduplicate(existing.types, abi.types, 'new_type_name'),
                     structs: mergeAndDeduplicate(existing.structs, abi.structs),
                     actions: mergeAndDeduplicate(existing.actions, abi.actions),
                     tables: mergeAndDeduplicate(existing.tables, abi.tables),
                     ricardian_clauses: mergeAndDeduplicate(
                         existing.ricardian_clauses,
-                        abi.ricardian_clauses
+                        abi.ricardian_clauses,
+                        'id'
                     ),
                     variants: mergeAndDeduplicate(existing.variants, abi.variants),
                     version: abi.version,
@@ -68,11 +69,11 @@ export class ABICache implements ABICacheInterface {
     }
 }
 
-function mergeAndDeduplicate(array1, array2) {
-    return [...array1, ...array2].reduce((acc, current) => {
-        if (!acc.some((obj) => String(obj.name) === String(current.name))) {
+function mergeAndDeduplicate(array1, array2, byField = 'name') {
+    return array2.reduce((acc: any[], current: any) => {
+        if (!acc.some((obj: any) => String(obj[byField]) === String(current[byField]))) {
             acc.push(current)
         }
         return acc
-    }, [])
+    }, array1.slice())
 }

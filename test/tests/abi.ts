@@ -40,7 +40,7 @@ suite('ABICache', function () {
         assert.instanceOf(result, ABI)
         assert.equal(result.version, 'eosio::abi/1.2')
     })
-    test('merge abis', async function () {
+    test('merge abis (eosio.token)', async function () {
         const abi = await abiCache.getAbi(Name.from('eosio.token'))
         abiCache.setAbi('eosio.token', abi, true)
         abiCache.setAbi('eosio.token', abi, true)
@@ -55,5 +55,27 @@ suite('ABICache', function () {
         assert.equal(test.variants.length, abi.variants.length)
         assert.equal(test.version, abi.version)
         assert.equal(JSON.stringify(test), JSON.stringify(abi))
+    })
+    test('merge abis (eosio)', async function () {
+        const raw = await client.v1.chain.get_abi('eosio')
+        if (raw.abi) {
+            const rawAbi = ABI.from(raw.abi)
+            const abi = await abiCache.getAbi(Name.from('eosio'))
+            assert.isTrue(rawAbi.equals(abi))
+            abiCache.setAbi('eosio', abi, true)
+            abiCache.setAbi('eosio', abi, true)
+            abiCache.setAbi('eosio', abi, true)
+            const test = await abiCache.getAbi('eosio')
+            assert.equal(test.action_results.length, abi.action_results.length)
+            assert.equal(test.actions.length, abi.actions.length)
+            assert.equal(test.ricardian_clauses.length, abi.ricardian_clauses.length)
+            assert.equal(test.structs.length, abi.structs.length)
+            assert.equal(test.tables.length, abi.tables.length)
+            assert.equal(test.types.length, abi.types.length)
+            assert.equal(test.variants.length, abi.variants.length)
+            assert.equal(test.version, abi.version)
+            assert.equal(JSON.stringify(test), JSON.stringify(abi))
+            assert.isTrue(rawAbi.equals(test))
+        }
     })
 })
