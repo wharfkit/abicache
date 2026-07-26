@@ -1,5 +1,5 @@
 import {makeClient} from '@wharfkit/mock-data'
-import {ABI, Action, Name, Struct} from '@wharfkit/antelope'
+import {ABI, APIClient, Action, Name, Struct} from '@wharfkit/antelope'
 import {assert} from 'chai'
 import {ABICache} from '$lib'
 
@@ -48,6 +48,33 @@ suite('ABICache', function () {
         const result = await abiCache.getAbi(Name.from('foo'))
         assert.instanceOf(result, ABI)
         assert.equal(result.version, 'eosio::abi/1.2')
+    })
+    test('retries after a rejected fetch instead of caching the rejection', async function () {
+        let calls = 0
+        const flaky = {
+            v1: {
+                chain: {
+                    get_raw_abi(account: Name) {
+                        calls++
+                        if (calls === 1) {
+                            return Promise.reject(new Error('network error'))
+                        }
+                        return client.v1.chain.get_raw_abi(account)
+                    },
+                },
+            },
+        } as unknown as APIClient
+        const cache = new ABICache(flaky)
+        try {
+            await cache.getAbi('eosio.token')
+            assert.fail('expected first getAbi to reject')
+        } catch (error) {
+            assert.equal((error as Error).message, 'network error')
+        }
+        assert.equal(cache.pending.size, 0, 'rejected promise left in pending map')
+        const result = await cache.getAbi('eosio.token')
+        assert.instanceOf(result, ABI)
+        assert.equal(calls, 2)
     })
     test('merge abis (eosio.token)', async function () {
         const abi = await abiCache.getAbi(Name.from('eosio.token'))

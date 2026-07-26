@@ -27,11 +27,12 @@ export class ABICache implements ABICacheInterface {
         }
         let getAbi = this.pending.get(key)
         if (!getAbi) {
-            getAbi = this.client.v1.chain.get_raw_abi(account)
+            getAbi = this.client.v1.chain.get_raw_abi(account).finally(() => {
+                this.pending.delete(key)
+            })
             this.pending.set(key, getAbi)
         }
         const response = await getAbi
-        this.pending.delete(key)
         if (response.abi) {
             const chainAbi = ABI.from(response.abi)
             const resolved = record ? ABICache.merge(chainAbi, record, chainAbi.version) : chainAbi
