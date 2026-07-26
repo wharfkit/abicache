@@ -14,28 +14,35 @@ export interface ABICacheInterface extends AbiProvider {
 export class ABICache implements ABICacheInterface {
     readonly cache: Map<string, ABI> = new Map()
     readonly pending: Map<string, Promise<API.v1.GetRawAbiResponse>> = new Map()
+    // Keys whose cached ABI came only from merged partial (action-synthesized) ABIs and is not yet reconciled with chain.
+    readonly partial: Set<string> = new Set()
 
     constructor(readonly client: APIClient) {}
 
     async getAbi(account: NameType): Promise<ABI> {
         const key = String(account)
-        let record = this.cache.get(key)
-        if (!record) {
-            let getAbi = this.pending.get(key)
-            if (!getAbi) {
-                getAbi = this.client.v1.chain.get_raw_abi(account)
-                this.pending.set(key, getAbi)
-            }
-            const response = await getAbi
-            this.pending.delete(key)
-            if (response.abi) {
-                record = ABI.from(response.abi)
-                this.cache.set(key, record)
-            } else {
-                throw new Error(`ABI for ${key} could not be loaded.`)
-            }
+        const record = this.cache.get(key)
+        if (record && !this.partial.has(key)) {
+            return record
         }
-        return record
+        let getAbi = this.pending.get(key)
+        if (!getAbi) {
+            getAbi = this.client.v1.chain.get_raw_abi(account)
+            this.pending.set(key, getAbi)
+        }
+        const response = await getAbi
+        this.pending.delete(key)
+        if (response.abi) {
+            const chainAbi = ABI.from(response.abi)
+            const resolved = record ? ABICache.merge(chainAbi, record, chainAbi.version) : chainAbi
+            this.cache.set(key, resolved)
+            this.partial.delete(key)
+            return resolved
+        } else if (record) {
+            return record
+        } else {
+            throw new Error(`ABI for ${key} could not be loaded.`)
+        }
     }
 
     setAbi(account: NameType, abiDef: ABIDef, merge = false) {
@@ -43,29 +50,32 @@ export class ABICache implements ABICacheInterface {
         const abi = ABI.from(abiDef)
         const existing = this.cache.get(key)
         if (merge && existing) {
-            this.cache.set(
-                key,
-                ABI.from({
-                    action_results: mergeAndDeduplicate(
-                        existing.action_results,
-                        abi.action_results
-                    ),
-                    types: mergeAndDeduplicate(existing.types, abi.types, 'new_type_name'),
-                    structs: mergeAndDeduplicate(existing.structs, abi.structs),
-                    actions: mergeAndDeduplicate(existing.actions, abi.actions),
-                    tables: mergeAndDeduplicate(existing.tables, abi.tables),
-                    ricardian_clauses: mergeAndDeduplicate(
-                        existing.ricardian_clauses,
-                        abi.ricardian_clauses,
-                        'id'
-                    ),
-                    variants: mergeAndDeduplicate(existing.variants, abi.variants),
-                    version: abi.version,
-                })
-            )
+            this.cache.set(key, ABICache.merge(existing, abi, abi.version))
         } else {
             this.cache.set(key, abi)
+            if (merge) {
+                this.partial.add(key)
+            } else {
+                this.partial.delete(key)
+            }
         }
+    }
+
+    private static merge(base: ABI, addition: ABI, version: string): ABI {
+        return ABI.from({
+            action_results: mergeAndDeduplicate(base.action_results, addition.action_results),
+            types: mergeAndDeduplicate(base.types, addition.types, 'new_type_name'),
+            structs: mergeAndDeduplicate(base.structs, addition.structs),
+            actions: mergeAndDeduplicate(base.actions, addition.actions),
+            tables: mergeAndDeduplicate(base.tables, addition.tables),
+            ricardian_clauses: mergeAndDeduplicate(
+                base.ricardian_clauses,
+                addition.ricardian_clauses,
+                'id'
+            ),
+            variants: mergeAndDeduplicate(base.variants, addition.variants),
+            version,
+        })
     }
 }
 

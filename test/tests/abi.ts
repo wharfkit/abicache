@@ -1,9 +1,18 @@
 import {makeClient} from '@wharfkit/mock-data'
-import {ABI, Name} from '@wharfkit/antelope'
+import {ABI, Action, Name, Struct} from '@wharfkit/antelope'
 import {assert} from 'chai'
 import {ABICache} from '$lib'
 
 const client = makeClient()
+
+// Typed action data built via `Action.from(data)` with no chain ABI synthesizes a single-action ABI.
+@Struct.type('transfer')
+class Transfer extends Struct {
+    @Struct.field('name') declare from: Name
+    @Struct.field('name') declare to: Name
+    @Struct.field('asset') declare quantity: unknown
+    @Struct.field('string') declare memo: string
+}
 
 suite('ABICache', function () {
     let abiCache = new ABICache(client)
@@ -77,5 +86,37 @@ suite('ABICache', function () {
             assert.equal(JSON.stringify(test), JSON.stringify(abi))
             assert.isTrue(rawAbi.equals(test))
         }
+    })
+})
+
+suite('ABICache partial-ABI poisoning', function () {
+    let abiCache = new ABICache(client)
+    setup(function () {
+        abiCache = new ABICache(client)
+    })
+
+    test('does not serve a partial (action-synthesized) ABI in place of the on-chain ABI', async function () {
+        const action = Action.from({
+            account: 'eosio.token',
+            name: 'transfer',
+            authorization: [],
+            data: Transfer.from({from: 'alice', to: 'bob', quantity: '1.0000 WAX', memo: ''}),
+        })
+        const partial = action.abi as ABI
+
+        // The synthesized ABI covers only `transfer`, not the rest of the contract.
+        assert.equal(partial.actions.length, 1)
+        assert.isUndefined(partial.getActionType('close'))
+
+        // Session.getMergedAbiCache() does this for any action carrying an `.abi`; on an empty slot the partial is stored wholesale.
+        abiCache.setAbi('eosio.token', partial, true)
+
+        // A later resolve of a different action must see the full on-chain ABI, not the poisoned partial.
+        const abi = await abiCache.getAbi(Name.from('eosio.token'))
+        assert.isDefined(
+            abi.getActionType('close'),
+            'expected on-chain action `close` to resolve, but cache served a partial ABI'
+        )
+        assert.equal(abi.actions.length, 6)
     })
 })
